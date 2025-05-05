@@ -55,7 +55,18 @@
     .item {
       flex: 0 0 150px;
       margin: 0 5px;
-      padding: 30px 10px;
+      padding: 0;
+      background: transparent;
+      border-radius: 10px;
+      perspective: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .item .content {
+      width: 100%;
+      padding: 20px 10px;
       background: #fff;
       border-radius: 10px;
       font-weight: bold;
@@ -63,12 +74,27 @@
       background-image: linear-gradient(90deg, #eee, #ddd);
       box-shadow: 0 0 5px rgba(0,0,0,0.2);
       transition: all 0.3s;
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+      text-align: center;
     }
 
-    .item.revealed {
+    .item.revealed .content {
       color: #d63384;
       background: #ffe6f0;
       box-shadow: 0 0 15px #ff69b4;
+      animation: flipIn 0.6s ease-out;
+    }
+
+    @keyframes flipIn {
+      from {
+        transform: rotateX(90deg);
+        opacity: 0;
+      }
+      to {
+        transform: rotateX(0deg);
+        opacity: 1;
+      }
     }
 
     button {
@@ -129,7 +155,7 @@
 
 <script>
   const compliments = [
-     "Я очень рад что познакомился с тобой",
+    "Я очень рад что познакомился с тобой",
     "Спасибо что помогаешь мне",
     "Ты очень милая",
     "Мне нравится твой голос",
@@ -149,11 +175,20 @@
 
   function shuffleItems() {
     itemsContainer.innerHTML = '';
-    const pool = [...compliments, ...compliments, ...compliments];
+    const pool = [];
+    while (pool.length < 30) {
+      pool.push(...compliments.sort(() => 0.5 - Math.random()));
+    }
+
     for (let i = 0; i < pool.length; i++) {
       const item = document.createElement('div');
       item.className = 'item';
-      item.textContent = pool[i];
+
+      const content = document.createElement('div');
+      content.className = 'content';
+      content.textContent = pool[i];
+
+      item.appendChild(content);
       itemsContainer.appendChild(item);
     }
   }
@@ -163,23 +198,36 @@
     againBtn.style.display = 'none';
     resultBox.style.display = 'none';
     caseBox.style.display = 'block';
+    itemsContainer.style.transition = 'none';
     itemsContainer.style.transform = 'translateX(0px)';
     shuffleItems();
 
     setTimeout(() => {
       const totalItems = itemsContainer.children.length;
-      const targetIndex = Math.floor(Math.random() * (totalItems - 6)) + 3;
-      const offset = -150 * targetIndex + 225;
+      const targetIndex = Math.floor(Math.random() * totalItems);
+
+      const itemWidth = 150;
+      const caseWidth = caseBox.clientWidth;
+      const centerOffset = caseWidth / 2 - itemWidth / 2;
+      const offset = -itemWidth * targetIndex + centerOffset;
 
       itemsContainer.style.transition = 'transform 3s ease-out';
       itemsContainer.style.transform = `translateX(${offset}px)`;
 
       setTimeout(() => {
         const selected = itemsContainer.children[targetIndex];
+        const content = selected.querySelector('.content');
+        const originalText = content.textContent;
+
+        content.textContent = '';
         selected.classList.add('revealed');
-        resultBox.textContent = `"${selected.textContent}"`;
-        resultBox.style.display = 'block';
-        againBtn.style.display = 'inline-block';
+
+        setTimeout(() => {
+          content.textContent = originalText;
+          resultBox.textContent = `"${originalText}"`;
+          resultBox.style.display = 'block';
+          againBtn.style.display = 'inline-block';
+        }, 400);
       }, 3100);
     }, 200);
   }
