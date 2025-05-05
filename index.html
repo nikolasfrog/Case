@@ -177,7 +177,7 @@
       setTimeout(() => {
         const selected = itemsContainer.children[targetIndex];
         selected.classList.add('revealed');
-        resultBox.textContent = `🎉 Тебе выпало: "${selected.textContent}"`;
+        resultBox.textContent = `"${selected.textContent}"`;
         resultBox.style.display = 'block';
         againBtn.style.display = 'inline-block';
       }, 3100);
