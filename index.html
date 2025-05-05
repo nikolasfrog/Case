@@ -95,12 +95,15 @@
       animation: fadeIn 1s ease-in-out;
     }
 
+    #againBtn {
+      display: none;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* милые звездочки */
     body::before {
       content: '';
       position: fixed;
@@ -122,10 +125,11 @@
 </div>
 
 <div id="result"></div>
+<button id="againBtn" onclick="startOpening()">Открыть снова</button>
 
 <script>
   const compliments = [
-    "Я очень рад что познакомился с тобой",
+     "Я очень рад что познакомился с тобой",
     "Спасибо что помогаешь мне",
     "Ты очень милая",
     "Мне нравится твой голос",
@@ -140,6 +144,7 @@
   const caseBox = document.getElementById('case');
   const itemsContainer = document.getElementById('items');
   const openBtn = document.getElementById('openBtn');
+  const againBtn = document.getElementById('againBtn');
   const resultBox = document.getElementById('result');
 
   function shuffleItems() {
@@ -155,8 +160,10 @@
 
   function startOpening() {
     openBtn.style.display = 'none';
-    caseBox.style.display = 'block';
+    againBtn.style.display = 'none';
     resultBox.style.display = 'none';
+    caseBox.style.display = 'block';
+    itemsContainer.style.transform = 'translateX(0px)';
     shuffleItems();
 
     setTimeout(() => {
@@ -167,12 +174,12 @@
       itemsContainer.style.transition = 'transform 3s ease-out';
       itemsContainer.style.transform = `translateX(${offset}px)`;
 
-      // Открываем комплимент по центру
       setTimeout(() => {
         const selected = itemsContainer.children[targetIndex];
         selected.classList.add('revealed');
-        resultBox.textContent = `"${selected.textContent}"`;
+        resultBox.textContent = `🎉 Тебе выпало: "${selected.textContent}"`;
         resultBox.style.display = 'block';
+        againBtn.style.display = 'inline-block';
       }, 3100);
     }, 200);
   }
